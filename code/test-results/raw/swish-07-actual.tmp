@@ -1,0 +1,2 @@
+>> sed "s#__HOME_DIR__#$HOME#g" test_commands/7.txt | ./run_terminal_session | dos2unix
+bash: line 1: dos2unix: command not found

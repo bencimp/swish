@@ -1,0 +1,30 @@
+* (TEST 27) Suspend Running Process
+COMMENTS:
+Run an interactive command that blocks the shell and suspend it. The shell
+should resume and accept additional commands.
+
+** program: bash -v
+
+** --- Failure messages --- 
+- FAILURE: Output Mismatch at lines marked
+
+** --- Side by Side Differences ---
+- Expect output in: test-results/raw/swish-27-expect.tmp
+- Actual output in: test-results/raw/swish-27-actual.tmp
+- Differing lines have a character like '|' '>' or '<' in the middle
+#+BEGIN_SRC sbs-diff
+==== EXPECT ====                                                  ==== ACTUAL ====                                               
+>> cat test_commands/27.txt | ./run_terminal_session | dos2unix   >> cat test_commands/27.txt | ./run_terminal_session | dos2unix
+@> wc                                                           | bash: line 1: dos2unix: command not found
+@> echo foo                                                     <
+foo                                                             <
+@> exit                                                         <
+#+END_SRC
+
+** --- Line Differences ---
+EXPECT:   2) @> wc
+EXPECT:   3) @> echo foo
+EXPECT:   4) foo
+EXPECT:   5) @> exit
+ACTUAL:   2) bash: line 1: dos2unix: command not found
+

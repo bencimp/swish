@@ -1,0 +1,41 @@
+* (TEST 16) Append Output to File
+COMMENTS:
+Run 'ls' first to create a new output file, then run it a second time and
+append to this file instead. Then 'cat' the file to display its contents.
+
+** program: bash -v
+
+** --- Failure messages --- 
+- FAILURE: Output Mismatch at lines marked
+
+** --- Side by Side Differences ---
+- Expect output in: test-results/raw/swish-16-expect.tmp
+- Actual output in: test-results/raw/swish-16-actual.tmp
+- Differing lines have a character like '|' '>' or '<' in the middle
+#+BEGIN_SRC sbs-diff
+==== EXPECT ====                                                  ==== ACTUAL ====                                               
+>> rm -f out.txt                                                  >> rm -f out.txt
+>> cat test_commands/16.txt | ./run_terminal_session | dos2unix   >> cat test_commands/16.txt | ./run_terminal_session | dos2unix
+@> cd test_data                                                 | bash: line 2: dos2unix: command not found
+@> ls >> ../out.txt                                             <
+@> ls >> ../out.txt                                             <
+@> cat ../out.txt                                               <
+gatsby.txt                                                      <
+quote.txt                                                       <
+gatsby.txt                                                      <
+quote.txt                                                       <
+@> exit                                                         <
+#+END_SRC
+
+** --- Line Differences ---
+EXPECT:   3) @> cd test_data
+EXPECT:   4) @> ls >> ../out.txt
+EXPECT:   5) @> ls >> ../out.txt
+EXPECT:   6) @> cat ../out.txt
+EXPECT:   7) gatsby.txt
+EXPECT:   8) quote.txt
+EXPECT:   9) gatsby.txt
+EXPECT:  10) quote.txt
+EXPECT:  11) @> exit
+ACTUAL:   3) bash: line 2: dos2unix: command not found
+

@@ -1,0 +1,46 @@
+* (TEST 7) Multiple Directory Changes (Absolute Paths)
+COMMENTS:
+Starts up a swish shell and changes back and forth between different directories
+identified by absolute and relative paths.
+
+** program: bash -v
+
+** --- Failure messages --- 
+- FAILURE: Output Mismatch at lines marked
+
+** --- Side by Side Differences ---
+- Expect output in: test-results/raw/swish-07-expect.tmp
+- Actual output in: test-results/raw/swish-07-actual.tmp
+- Differing lines have a character like '|' '>' or '<' in the middle
+#+BEGIN_SRC sbs-diff
+==== EXPECT ====                                                                          ==== ACTUAL ====                                                                       
+>> sed "s#__HOME_DIR__#$HOME#g" test_commands/7.txt | ./run_terminal_session | dos2unix   >> sed "s#__HOME_DIR__#$HOME#g" test_commands/7.txt | ./run_terminal_session | dos2unix
+@> pwd                                                                                  | bash: line 1: dos2unix: command not found
+/media/sf_GitHub/swish/code                                                             <
+@> cd /                                                                                 <
+@> pwd                                                                                  <
+/                                                                                       <
+@> cd /home/blockhead                                                                   <
+@> pwd                                                                                  <
+/home/blockhead                                                                         <
+@> cd /                                                                                 <
+@> pwd                                                                                  <
+/                                                                                       <
+@> exit                                                                                 <
+#+END_SRC
+
+** --- Line Differences ---
+EXPECT:   2) @> pwd
+EXPECT:   3) /media/sf_GitHub/swish/code
+EXPECT:   4) @> cd /
+EXPECT:   5) @> pwd
+EXPECT:   6) /
+EXPECT:   7) @> cd /home/blockhead
+EXPECT:   8) @> pwd
+EXPECT:   9) /home/blockhead
+EXPECT:  10) @> cd /
+EXPECT:  11) @> pwd
+EXPECT:  12) /
+EXPECT:  13) @> exit
+ACTUAL:   2) bash: line 1: dos2unix: command not found
+

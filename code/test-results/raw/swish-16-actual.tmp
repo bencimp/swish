@@ -1,0 +1,3 @@
+>> rm -f out.txt
+>> cat test_commands/16.txt | ./run_terminal_session | dos2unix
+bash: line 2: dos2unix: command not found
