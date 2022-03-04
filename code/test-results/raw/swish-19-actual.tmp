@@ -1,3 +1,15 @@
 >> echo foo > out.txt
 >> cat test_commands/19.txt | ./run_terminal_session | dos2unix
-bash: line 2: dos2unix: command not found
+@> wc -c -m -l -L -w test_data/gatsby.txt >> out.txt
+  6772  51257 289900 299452     74 test_data/gatsby.txt
+wc: '>>': No such file or directory
+     1      1      4      4      3 out.txt
+  6773  51258 289904 299456     74 total
+  6772  51257 289900 299452     74 test_data/gatsby.txt
+wc: '>>': No such file or directory
+     1      1      4      4      3 out.txt
+  6773  51258 289904 299456     74 total
+@> cat out.txt
+foo
+foo
+@> exit

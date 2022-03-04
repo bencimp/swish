@@ -21,6 +21,12 @@ int tokenize(char *s, strvec_t *tokens) {
     // Use the strtok() function to accomplish this
     // Add each token to the 'tokens' parameter (a string vector)
     // Return 0 on success, 1 on error
+  char *token;
+  token = strtok(s, " ");
+  while (token != NULL){
+    strvec_add(tokens, token);
+    token = strtok(NULL, " ");
+  }
     return 0;
 }
 
@@ -31,6 +37,27 @@ int run_command(strvec_t *tokens) {
     // Hint: Build a string array from the 'tokens' vector and pass this into execvp()
     // Another Hint: You have a guarantee of the longest possible needed array, so you
     // won't have to use malloc.
+
+    char* arguments[MAX_ARGS+1];
+
+    //int waitStatus = 0;
+    int vecsize = tokens->length;
+
+    pid_t process = fork();
+
+    for(int x = 0; x < vecsize + 1; x ++){
+        arguments[x] = strvec_get(tokens, x);
+        //printf("%s\n", arguments[x]);
+    }
+
+    if (!process){
+        execvp(arguments[0], arguments);
+        perror("exec");
+        return -1;
+    }
+    else {
+        waitpid(process, NULL, 0);
+    }
 
     // TODO Task 3: Extend this function to perform output redirection before exec()'ing
     // Check for '<' (redirect input), '>' (redirect output), '>>' (redirect and append output)

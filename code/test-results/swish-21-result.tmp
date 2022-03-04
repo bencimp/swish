@@ -15,18 +15,14 @@ effectively copies a file. Then 'cat' this copy to display its contents.
 #+BEGIN_SRC sbs-diff
 ==== EXPECT ====                                                  ==== ACTUAL ====                                               
 >> cat test_commands/21.txt | ./run_terminal_session | dos2unix   >> cat test_commands/21.txt | ./run_terminal_session | dos2unix
-@> cat < test_data/quote.txt > out.txt                          | bash: line 1: dos2unix: command not found
-@> cat out.txt                                                  <
+@> cat < test_data/quote.txt > out.txt                            @> cat < test_data/quote.txt > out.txt
+@> cat out.txt                                                    @> cat out.txt
 Premature optimization is the root of all evil.                 <
     -- Donald Knuth                                             <
-@> exit                                                         <
+@> exit                                                           @> exit
 #+END_SRC
 
 ** --- Line Differences ---
-EXPECT:   2) @> cat < test_data/quote.txt > out.txt
-EXPECT:   3) @> cat out.txt
 EXPECT:   4) Premature optimization is the root of all evil.
 EXPECT:   5)     -- Donald Knuth
-EXPECT:   6) @> exit
-ACTUAL:   2) bash: line 1: dos2unix: command not found
 

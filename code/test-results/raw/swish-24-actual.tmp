@@ -1,3 +1,5 @@
 >> echo foo > out.txt
 >> cat test_commands/24.txt | ./run_terminal_session | dos2unix
-bash: line 2: dos2unix: command not found
+@> wc -c -m -l -L -w < test_data/gatsby.txt >> out.txt
+@> cat out.txt
+@> exit

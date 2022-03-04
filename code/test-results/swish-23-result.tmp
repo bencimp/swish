@@ -14,16 +14,12 @@ Run 'wc' with several command line arguments, redirecting both input and output.
 #+BEGIN_SRC sbs-diff
 ==== EXPECT ====                                                  ==== ACTUAL ====                                               
 >> cat test_commands/23.txt | ./run_terminal_session | dos2unix   >> cat test_commands/23.txt | ./run_terminal_session | dos2unix
-@> wc -c -m -l -L -w < test_data/gatsby.txt > out.txt           | bash: line 1: dos2unix: command not found
-@> cat out.txt                                                  <
+@> wc -c -m -l -L -w < test_data/gatsby.txt > out.txt             @> wc -c -m -l -L -w < test_data/gatsby.txt > out.txt
+@> cat out.txt                                                    @> cat out.txt
   6772 51257 289900 299452 74                                   <
-@> exit                                                         <
+@> exit                                                           @> exit
 #+END_SRC
 
 ** --- Line Differences ---
-EXPECT:   2) @> wc -c -m -l -L -w < test_data/gatsby.txt > out.txt
-EXPECT:   3) @> cat out.txt
 EXPECT:   4)   6772 51257 289900 299452 74
-EXPECT:   5) @> exit
-ACTUAL:   2) bash: line 1: dos2unix: command not found
 

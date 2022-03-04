@@ -16,20 +16,16 @@ rather than overwriting output file. Then 'cat' the output file.
 ==== EXPECT ====                                                  ==== ACTUAL ====                                               
 >> echo foo > out.txt                                             >> echo foo > out.txt
 >> cat test_commands/22.txt | ./run_terminal_session | dos2unix   >> cat test_commands/22.txt | ./run_terminal_session | dos2unix
-@> cat < test_data/quote.txt >> out.txt                         | bash: line 2: dos2unix: command not found
-@> cat out.txt                                                  <
+@> cat < test_data/quote.txt >> out.txt                           @> cat < test_data/quote.txt >> out.txt
+@> cat out.txt                                                    @> cat out.txt
 foo                                                             <
 Premature optimization is the root of all evil.                 <
     -- Donald Knuth                                             <
-@> exit                                                         <
+@> exit                                                           @> exit
 #+END_SRC
 
 ** --- Line Differences ---
-EXPECT:   3) @> cat < test_data/quote.txt >> out.txt
-EXPECT:   4) @> cat out.txt
 EXPECT:   5) foo
 EXPECT:   6) Premature optimization is the root of all evil.
 EXPECT:   7)     -- Donald Knuth
-EXPECT:   8) @> exit
-ACTUAL:   3) bash: line 2: dos2unix: command not found
 

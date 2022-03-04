@@ -1,2 +1,7 @@
 >> cat test_commands/4.txt | ./run_terminal_session | dos2unix
-bash: line 1: dos2unix: command not found
+@> pwd
+/media/sf_GitHub/swish/code
+@> cd
+@> pwd
+/home/blockhead
+@> exit

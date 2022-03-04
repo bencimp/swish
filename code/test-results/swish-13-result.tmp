@@ -15,20 +15,20 @@ display its contents.
 #+BEGIN_SRC sbs-diff
 ==== EXPECT ====                                                  ==== ACTUAL ====                                               
 >> cat test_commands/13.txt | ./run_terminal_session | dos2unix   >> cat test_commands/13.txt | ./run_terminal_session | dos2unix
-@> cd test_data                                                 | bash: line 1: dos2unix: command not found
-@> ls > ../out.txt                                              <
-@> cat ../out.txt                                               <
-gatsby.txt                                                      <
+@> cd test_data                                                   @> cd test_data
+@> ls > ../out.txt                                                @> ls > ../out.txt
+                                                                > ls: cannot access '>': No such file or directory
+                                                                >  ../out.txt
+@> cat ../out.txt                                                 @> cat ../out.txt
+gatsby.txt                                                      | foo
 quote.txt                                                       <
-@> exit                                                         <
+@> exit                                                           @> exit
 #+END_SRC
 
 ** --- Line Differences ---
-EXPECT:   2) @> cd test_data
-EXPECT:   3) @> ls > ../out.txt
-EXPECT:   4) @> cat ../out.txt
+ACTUAL:   4) ls: cannot access '>': No such file or directory
+ACTUAL:   5)  ../out.txt
 EXPECT:   5) gatsby.txt
 EXPECT:   6) quote.txt
-EXPECT:   7) @> exit
-ACTUAL:   2) bash: line 1: dos2unix: command not found
+ACTUAL:   7) foo
 

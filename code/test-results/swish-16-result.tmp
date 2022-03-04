@@ -16,26 +16,29 @@ append to this file instead. Then 'cat' the file to display its contents.
 ==== EXPECT ====                                                  ==== ACTUAL ====                                               
 >> rm -f out.txt                                                  >> rm -f out.txt
 >> cat test_commands/16.txt | ./run_terminal_session | dos2unix   >> cat test_commands/16.txt | ./run_terminal_session | dos2unix
-@> cd test_data                                                 | bash: line 2: dos2unix: command not found
-@> ls >> ../out.txt                                             <
-@> ls >> ../out.txt                                             <
-@> cat ../out.txt                                               <
-gatsby.txt                                                      <
+@> cd test_data                                                   @> cd test_data
+@> ls >> ../out.txt                                               @> ls >> ../out.txt
+                                                                > ls: cannot access '>>': No such file or directory
+                                                                > ls: cannot access '../out.txt': No such file or directory
+@> ls >> ../out.txt                                               @> ls >> ../out.txt
+                                                                > ls: cannot access '>>': No such file or directory
+                                                                > ls: cannot access '../out.txt': No such file or directory
+@> cat ../out.txt                                                 @> cat ../out.txt
+gatsby.txt                                                      | cat: ../out.txt: No such file or directory
 quote.txt                                                       <
 gatsby.txt                                                      <
 quote.txt                                                       <
-@> exit                                                         <
+@> exit                                                           @> exit
 #+END_SRC
 
 ** --- Line Differences ---
-EXPECT:   3) @> cd test_data
-EXPECT:   4) @> ls >> ../out.txt
-EXPECT:   5) @> ls >> ../out.txt
-EXPECT:   6) @> cat ../out.txt
+ACTUAL:   5) ls: cannot access '>>': No such file or directory
+ACTUAL:   6) ls: cannot access '../out.txt': No such file or directory
+ACTUAL:   8) ls: cannot access '>>': No such file or directory
+ACTUAL:   9) ls: cannot access '../out.txt': No such file or directory
 EXPECT:   7) gatsby.txt
 EXPECT:   8) quote.txt
 EXPECT:   9) gatsby.txt
 EXPECT:  10) quote.txt
-EXPECT:  11) @> exit
-ACTUAL:   3) bash: line 2: dos2unix: command not found
+ACTUAL:  11) cat: ../out.txt: No such file or directory
 

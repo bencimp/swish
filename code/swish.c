@@ -65,6 +65,9 @@ int main(int argc, char **argv) {
         if (strcmp(first_token, "pwd") == 0) {
             // TODO Task 1: Print the shell's current working directory
             // Use the getcwd() system call
+            char dirName[4096];
+            getcwd(dirName, sizeof(dirName));
+            printf("%s\n", dirName);
         }
 
         else if (strcmp(first_token, "cd") == 0) {
@@ -73,6 +76,14 @@ int main(int argc, char **argv) {
             // If the user supplied an argument (token at index 1), change to that directory
             // Otherwise, change to the home directory by default
             // This is available in the HOME environment variable (use getenv())
+            if (strvec_get(&tokens, 1) == NULL){
+                chdir(getenv("HOME"));
+            } 
+            else{
+                if((chdir(strvec_get(&tokens, 1)))){
+                    perror("chdir");
+                }
+            }
         }
 
         else if (strcmp(first_token, "exit") == 0) {
@@ -158,6 +169,11 @@ int main(int argc, char **argv) {
             //    use waitpid() to interact with the newly spawned child process.
             // 3. Add a new entry to the jobs list with the child's pid, program name,
             //    and status JOB_BACKGROUND.
+            if (run_command(&tokens) == -1){
+                return 0;
+            }
+
+            //run_command(&tokens);
         }
 
         strvec_clear(&tokens);

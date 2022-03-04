@@ -1,3 +1,12 @@
 >> rm -f out.txt
 >> cat test_commands/16.txt | ./run_terminal_session | dos2unix
-bash: line 2: dos2unix: command not found
+@> cd test_data
+@> ls >> ../out.txt
+ls: cannot access '>>': No such file or directory
+ls: cannot access '../out.txt': No such file or directory
+@> ls >> ../out.txt
+ls: cannot access '>>': No such file or directory
+ls: cannot access '../out.txt': No such file or directory
+@> cat ../out.txt
+cat: ../out.txt: No such file or directory
+@> exit

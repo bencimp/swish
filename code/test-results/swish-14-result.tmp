@@ -16,24 +16,22 @@ display its contents and verify that old version of file is overwritten.
 ==== EXPECT ====                                                  ==== ACTUAL ====                                               
 >> echo foo > out.txt                                             >> echo foo > out.txt
 >> cat test_commands/14.txt | ./run_terminal_session | dos2unix   >> cat test_commands/14.txt | ./run_terminal_session | dos2unix
-@> cat out.txt                                                  | bash: line 2: dos2unix: command not found
-foo                                                             <
-@> cd test_data                                                 <
-@> ls > ../out.txt                                              <
-@> cat ../out.txt                                               <
-gatsby.txt                                                      <
+@> cat out.txt                                                    @> cat out.txt
+foo                                                               foo
+@> cd test_data                                                   @> cd test_data
+@> ls > ../out.txt                                                @> ls > ../out.txt
+                                                                > ls: cannot access '>': No such file or directory
+                                                                >  ../out.txt
+@> cat ../out.txt                                                 @> cat ../out.txt
+gatsby.txt                                                      | foo
 quote.txt                                                       <
-@> exit                                                         <
+@> exit                                                           @> exit
 #+END_SRC
 
 ** --- Line Differences ---
-EXPECT:   3) @> cat out.txt
-EXPECT:   4) foo
-EXPECT:   5) @> cd test_data
-EXPECT:   6) @> ls > ../out.txt
-EXPECT:   7) @> cat ../out.txt
+ACTUAL:   7) ls: cannot access '>': No such file or directory
+ACTUAL:   8)  ../out.txt
 EXPECT:   8) gatsby.txt
 EXPECT:   9) quote.txt
-EXPECT:  10) @> exit
-ACTUAL:   3) bash: line 2: dos2unix: command not found
+ACTUAL:  10) foo
 

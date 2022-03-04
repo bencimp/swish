@@ -1,0 +1,3 @@
+cat test_commands/31.txt | ./run_terminal_session | dos2unix
+@> wc
+@> 

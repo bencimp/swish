@@ -15,18 +15,30 @@ Run a command with several arguments and redirect its input from a file.
 ==== EXPECT ====                                                  ==== ACTUAL ====                                               
 >> echo foo > out.txt                                             >> echo foo > out.txt
 >> cat test_commands/19.txt | ./run_terminal_session | dos2unix   >> cat test_commands/19.txt | ./run_terminal_session | dos2unix
-@> wc -c -m -l -L -w test_data/gatsby.txt >> out.txt            | bash: line 2: dos2unix: command not found
-@> cat out.txt                                                  <
-foo                                                             <
-  6772 51257 289900 299452 74 test_data/gatsby.txt              <
-@> exit                                                         <
+@> wc -c -m -l -L -w test_data/gatsby.txt >> out.txt              @> wc -c -m -l -L -w test_data/gatsby.txt >> out.txt
+                                                                >   6772  51257 289900 299452     74 test_data/gatsby.txt
+                                                                > wc: '>>': No such file or directory
+                                                                >      1      1      4      4      3 out.txt
+                                                                >   6773  51258 289904 299456     74 total
+                                                                >   6772  51257 289900 299452     74 test_data/gatsby.txt
+                                                                > wc: '>>': No such file or directory
+                                                                >      1      1      4      4      3 out.txt
+                                                                >   6773  51258 289904 299456     74 total
+@> cat out.txt                                                    @> cat out.txt
+foo                                                               foo
+  6772 51257 289900 299452 74 test_data/gatsby.txt              | foo
+@> exit                                                           @> exit
 #+END_SRC
 
 ** --- Line Differences ---
-EXPECT:   3) @> wc -c -m -l -L -w test_data/gatsby.txt >> out.txt
-EXPECT:   4) @> cat out.txt
-EXPECT:   5) foo
+ACTUAL:   4)   6772  51257 289900 299452     74 test_data/gatsby.txt
+ACTUAL:   5) wc: '>>': No such file or directory
+ACTUAL:   6)      1      1      4      4      3 out.txt
+ACTUAL:   7)   6773  51258 289904 299456     74 total
+ACTUAL:   8)   6772  51257 289900 299452     74 test_data/gatsby.txt
+ACTUAL:   9) wc: '>>': No such file or directory
+ACTUAL:  10)      1      1      4      4      3 out.txt
+ACTUAL:  11)   6773  51258 289904 299456     74 total
 EXPECT:   6)   6772 51257 289900 299452 74 test_data/gatsby.txt
-EXPECT:   7) @> exit
-ACTUAL:   3) bash: line 2: dos2unix: command not found
+ACTUAL:  14) foo
 
