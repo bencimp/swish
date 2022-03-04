@@ -172,8 +172,6 @@ int main(int argc, char **argv) {
             if (run_command(&tokens) == -1){
                 return 0;
             }
-
-            //run_command(&tokens);
         }
 
         strvec_clear(&tokens);

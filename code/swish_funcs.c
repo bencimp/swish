@@ -42,15 +42,81 @@ int run_command(strvec_t *tokens) {
 
     //int waitStatus = 0;
     int vecsize = tokens->length;
+    int redirectPos = 0;
 
-    pid_t process = fork();
+    
 
     for(int x = 0; x < vecsize + 1; x ++){
-        arguments[x] = strvec_get(tokens, x);
+        char* mytoken = strvec_get(tokens, x);
+        //printf("%d %s\n", x, mytoken);
+        if (mytoken != NULL){
+            if (strcmp(mytoken, "<") == 0 || strcmp(mytoken, ">") == 0 || strcmp(mytoken, ">>") == 0){
+                redirectPos = x;
+                arguments[x] = NULL;
+                break;
+            }
+        }  
+        arguments[x] = mytoken;
         //printf("%s\n", arguments[x]);
     }
 
+    //redirection code goes here
+
+    //printf("Forking\n");
+    
+    pid_t process = fork();
+
+    //if (redirectPos) printf("redirecting\n");
+
     if (!process){
+        
+        if (redirectPos != 0 && strvec_get(tokens, redirectPos) != NULL){
+            if (!strcmp(strvec_get(tokens, redirectPos), "<")){
+                //printf("attempting to redirect input\n");
+                //read in from file
+                //FILE* infile = open(strvec_get(tokens, redirectPos + 1), S_IRUSR);
+                int fd = open(strvec_get(tokens, redirectPos + 1), 0, S_IRUSR);
+                if (fd == -1){
+                    perror("Failed to open input file");
+                    return -1;
+                }
+
+                if (dup2(fd, STDIN_FILENO)){
+                    
+                }
+                redirectPos += 2;
+            }
+        }
+
+        if (redirectPos != 0 && strvec_get(tokens, redirectPos) != NULL){
+            //FILE* outfile = open(strvec_get(tokens, redirectPos + 1), S_IRUSR | S_IWUSR);
+            
+            //printf("attempting to redirect output\n");
+            if (!strcmp(strvec_get(tokens, redirectPos), ">")){
+                //printf("trunc\n");
+                int fd = open(strvec_get(tokens, redirectPos + 1), O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR );
+                //printf("attempting first dup2\n");
+                if(dup2(fd, STDERR_FILENO) == -1){
+                    perror("dup2");
+                }
+                //printf("attempting second dup2\n");
+                if(dup2(fd, STDOUT_FILENO) == -1){
+                    perror("dup2");
+                }
+                
+            }
+            if (!strcmp(strvec_get(tokens, redirectPos), ">>")){
+                //printf("append\n");
+                int fd = open(strvec_get(tokens, redirectPos + 1), O_CREAT | O_APPEND | O_RDWR, S_IRUSR | S_IWUSR);
+                if (dup2(fd, STDERR_FILENO) == -1){
+                    perror("dup2");
+                }
+                if (dup2(fd, STDOUT_FILENO) == -1){
+                    perror("dup2");
+                }
+            }
+        }
+
         execvp(arguments[0], arguments);
         perror("exec");
         return -1;

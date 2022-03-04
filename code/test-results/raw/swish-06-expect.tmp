@@ -1,7 +1,0 @@
->> sed "s#__HOME_DIR__#$HOME#g" test_commands/6.txt | ./run_terminal_session | dos2unix
-@> pwd
-/media/sf_GitHub/swish/code
-@> cd /home/blockhead
-@> pwd
-/home/blockhead
-@> exit
