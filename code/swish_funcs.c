@@ -124,9 +124,9 @@ int run_command(strvec_t *tokens) {
         return -1;
     }
     else {
-        tcsetpgrp(getpid(), process);
+        tcsetpgrp(0, process);
         waitpid(process, NULL, 0);
-        tcsetpgrp(getpid(), getpid());
+        tcsetpgrp(0, getpid());
     }
 
     // TODO Task 3: Extend this function to perform output redirection before exec()'ing

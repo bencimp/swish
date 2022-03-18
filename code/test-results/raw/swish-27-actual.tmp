@@ -1,5 +1,0 @@
->> cat test_commands/27.txt | ./run_terminal_session | dos2unix
-@> wc
-wc: 'standard input': Input/output error
-      0       0       0
-@> 
