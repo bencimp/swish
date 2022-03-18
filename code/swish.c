@@ -144,9 +144,96 @@ int main(int argc, char **argv) {
             //   1. Use fork() to spawn a child process
             //   2. Call run_command() in the child process
             //   2. In the parent, use waitpid() to wait for the program to exit
-            if (run_command(&tokens) == -1){
-                return 0;
+
+
+//Beginning of copy code
+
+            pid_t process = fork();
+
+            if (!process){
+                if (run_command(&tokens) == -1){
+                    return 0;
+                }
+
+                /*
+                setpgid(getpid(), getpid());
+
+                if (redirectPos != 0 && strvec_get(tokens, redirectPos) != NULL){
+                    if (!strcmp(strvec_get(tokens, redirectPos), "<")){
+                        //printf("attempting to redirect input\n");
+                        //read in from file
+                        //FILE* infile = open(strvec_get(tokens, redirectPos + 1), S_IRUSR);
+                        int fd = open(strvec_get(tokens, redirectPos + 1), 0, S_IRUSR);
+                        if (fd == -1){
+                            perror("Failed to open input file");
+                            return -1;
+                        }
+
+                        if (dup2(fd, STDIN_FILENO)){
+                            
+                        }
+                        redirectPos += 2;
+                    }
+                }
+
+                if (redirectPos != 0 && strvec_get(tokens, redirectPos) != NULL){
+                    //FILE* outfile = open(strvec_get(tokens, redirectPos + 1), S_IRUSR | S_IWUSR);
+                    
+                    //printf("attempting to redirect output\n");
+                    if (!strcmp(strvec_get(tokens, redirectPos), ">")){
+                        //printf("trunc\n");
+                        int fd = open(strvec_get(tokens, redirectPos + 1), O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR );
+                        //printf("attempting first dup2\n");
+                        if(dup2(fd, STDERR_FILENO) == -1){
+                            perror("dup2");
+                        }
+                        //printf("attempting second dup2\n");
+                        if(dup2(fd, STDOUT_FILENO) == -1){
+                            perror("dup2");
+                        }
+                        
+                    }
+                    if (!strcmp(strvec_get(tokens, redirectPos), ">>")){
+                        //printf("append\n");
+                        int fd = open(strvec_get(tokens, redirectPos + 1), O_CREAT | O_APPEND | O_RDWR, S_IRUSR | S_IWUSR);
+                        if (dup2(fd, STDERR_FILENO) == -1){
+                            perror("dup2");
+                        }
+                        if (dup2(fd, STDOUT_FILENO) == -1){
+                            perror("dup2");
+                        }
+                    }
+                }
+
+                execvp(arguments[0], arguments);
+                perror("exec");
+                return -1;
+                */
             }
+            else {
+                int storageno = 0;
+                tcsetpgrp(STDIN_FILENO, process);
+                waitpid(process, &storageno, WUNTRACED);
+                if(WIFSTOPPED(storageno)){
+                    //stop eating paste and make it work
+                }
+                tcsetpgrp(0, getpid());
+            }
+
+
+//End of copy code here
+
+
+            //first do
+
+
+
+            /*if (run_command(&tokens) == -1){
+                return 0;
+            }*/
+
+
+
             // TODO Task 4: Set the child process as the target of signals sent to the terminal
             // via the keyboard.
             // To do this, call 'tcsetpgrp(STDIN_FILENO, <child_pid>)', where child_pid is the

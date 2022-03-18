@@ -38,6 +38,84 @@ int run_command(strvec_t *tokens) {
     // Another Hint: You have a guarantee of the longest possible needed array, so you
     // won't have to use malloc.
 
+
+//Moved code
+    char* arguments[MAX_ARGS+1];
+    int vecsize = tokens->length;
+    int redirectPos = 0;
+
+    
+
+    for(int x = 0; x < vecsize + 1; x ++){
+        char* mytoken = strvec_get(tokens, x);
+        //printf("%d %s\n", x, mytoken);
+        if (mytoken != NULL){
+            if (strcmp(mytoken, "<") == 0 || strcmp(mytoken, ">") == 0 || strcmp(mytoken, ">>") == 0){
+                redirectPos = x;
+                arguments[x] = NULL;
+                break;
+            }
+        }
+        arguments[x] = mytoken;
+        //printf("%s\n", arguments[x]);
+    }
+
+    setpgid(getpid(), getpid());
+
+    if (redirectPos != 0 && strvec_get(tokens, redirectPos) != NULL){
+        if (!strcmp(strvec_get(tokens, redirectPos), "<")){
+            //printf("attempting to redirect input\n");
+            //read in from file
+            //FILE* infile = open(strvec_get(tokens, redirectPos + 1), S_IRUSR);
+            int fd = open(strvec_get(tokens, redirectPos + 1), 0, S_IRUSR);
+            if (fd == -1){
+                perror("Failed to open input file");
+                return -1;
+            }
+
+            if (dup2(fd, STDIN_FILENO)){
+                
+            }
+            redirectPos += 2;
+        }
+    }
+
+    if (redirectPos != 0 && strvec_get(tokens, redirectPos) != NULL){
+        //FILE* outfile = open(strvec_get(tokens, redirectPos + 1), S_IRUSR | S_IWUSR);
+        
+        //printf("attempting to redirect output\n");
+        if (!strcmp(strvec_get(tokens, redirectPos), ">")){
+            //printf("trunc\n");
+            int fd = open(strvec_get(tokens, redirectPos + 1), O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR );
+            //printf("attempting first dup2\n");
+            if(dup2(fd, STDERR_FILENO) == -1){
+                perror("dup2");
+            }
+            //printf("attempting second dup2\n");
+            if(dup2(fd, STDOUT_FILENO) == -1){
+                perror("dup2");
+            }
+            
+        }
+        if (!strcmp(strvec_get(tokens, redirectPos), ">>")){
+            //printf("append\n");
+            int fd = open(strvec_get(tokens, redirectPos + 1), O_CREAT | O_APPEND | O_RDWR, S_IRUSR | S_IWUSR);
+            if (dup2(fd, STDERR_FILENO) == -1){
+                perror("dup2");
+            }
+            if (dup2(fd, STDOUT_FILENO) == -1){
+                perror("dup2");
+            }
+        }
+    }
+
+    execvp(arguments[0], arguments);
+    perror("exec");
+    return -1;
+
+
+//after this point, is just the old run command code
+/*
     char* arguments[MAX_ARGS+1];
 
     //int waitStatus = 0;
@@ -55,7 +133,7 @@ int run_command(strvec_t *tokens) {
                 arguments[x] = NULL;
                 break;
             }
-        }  
+        }
         arguments[x] = mytoken;
         //printf("%s\n", arguments[x]);
     }
@@ -124,8 +202,12 @@ int run_command(strvec_t *tokens) {
         return -1;
     }
     else {
+        int storageno = 0;
         tcsetpgrp(0, process);
-        waitpid(process, NULL, 0);
+        waitpid(process, storageno, WUNTRACED);
+        if(WIFSTOPPED(storageno)){
+            //somehow pass the job back to the main function and add it to the job list
+        }
         tcsetpgrp(0, getpid());
     }
 
@@ -147,6 +229,8 @@ int run_command(strvec_t *tokens) {
 
     // Not reachable after a successful exec(), but retain here to keep compiler happy
     return 0;
+
+    */
 }
 
 int resume_job(strvec_t *tokens, job_list_t *jobs, int is_foreground) {
