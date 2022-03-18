@@ -38,9 +38,9 @@ int run_command(strvec_t *tokens) {
     // Another Hint: You have a guarantee of the longest possible needed array, so you
     // won't have to use malloc.
 
-    char* arguments[MAX_ARGS+1];
 
-    //int waitStatus = 0;
+    //Moved code
+    char* arguments[MAX_ARGS+1];
     int vecsize = tokens->length;
     int redirectPos = 0;
 
@@ -55,79 +55,66 @@ int run_command(strvec_t *tokens) {
                 arguments[x] = NULL;
                 break;
             }
-        }  
+        }
         arguments[x] = mytoken;
         //printf("%s\n", arguments[x]);
     }
 
-    //redirection code goes here
+    setpgid(getpid(), getpid());
 
-    //printf("Forking\n");
-    
-    pid_t process = fork();
-
-    //if (redirectPos) printf("redirecting\n");
-
-    if (!process){
-        
-        setpgid(getpid(), getpid());
-
-        if (redirectPos != 0 && strvec_get(tokens, redirectPos) != NULL){
-            if (!strcmp(strvec_get(tokens, redirectPos), "<")){
-                //printf("attempting to redirect input\n");
-                //read in from file
-                //FILE* infile = open(strvec_get(tokens, redirectPos + 1), S_IRUSR);
-                int fd = open(strvec_get(tokens, redirectPos + 1), 0, S_IRUSR);
-                if (fd == -1){
-                    perror("Failed to open input file");
-                    return -1;
-                }
-
-                if (dup2(fd, STDIN_FILENO)){
-                    
-                }
-                redirectPos += 2;
+    if (redirectPos != 0 && strvec_get(tokens, redirectPos) != NULL){
+        if (!strcmp(strvec_get(tokens, redirectPos), "<")){
+            //printf("attempting to redirect input\n");
+            //read in from file
+            //FILE* infile = open(strvec_get(tokens, redirectPos + 1), S_IRUSR);
+            int fd = open(strvec_get(tokens, redirectPos + 1), 0, S_IRUSR);
+            if (fd == -1){
+                perror("Failed to open input file");
+                return -1;
             }
-        }
 
-        if (redirectPos != 0 && strvec_get(tokens, redirectPos) != NULL){
-            //FILE* outfile = open(strvec_get(tokens, redirectPos + 1), S_IRUSR | S_IWUSR);
-            
-            //printf("attempting to redirect output\n");
-            if (!strcmp(strvec_get(tokens, redirectPos), ">")){
-                //printf("trunc\n");
-                int fd = open(strvec_get(tokens, redirectPos + 1), O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR );
-                //printf("attempting first dup2\n");
-                if(dup2(fd, STDERR_FILENO) == -1){
-                    perror("dup2");
-                }
-                //printf("attempting second dup2\n");
-                if(dup2(fd, STDOUT_FILENO) == -1){
-                    perror("dup2");
-                }
+            if (dup2(fd, STDIN_FILENO)){
                 
             }
-            if (!strcmp(strvec_get(tokens, redirectPos), ">>")){
-                //printf("append\n");
-                int fd = open(strvec_get(tokens, redirectPos + 1), O_CREAT | O_APPEND | O_RDWR, S_IRUSR | S_IWUSR);
-                if (dup2(fd, STDERR_FILENO) == -1){
-                    perror("dup2");
-                }
-                if (dup2(fd, STDOUT_FILENO) == -1){
-                    perror("dup2");
-                }
+            redirectPos += 2;
+        }
+    }
+
+    if (redirectPos != 0 && strvec_get(tokens, redirectPos) != NULL){
+        
+        //printf("attempting to redirect output\n");
+        if (!strcmp(strvec_get(tokens, redirectPos), ">")){
+            //printf("trunc\n");
+            int fd = open(strvec_get(tokens, redirectPos + 1), O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR );
+            //printf("attempting first dup2\n");
+            if(dup2(fd, STDERR_FILENO) == -1){
+                perror("dup2");
+            }
+            //printf("attempting second dup2\n");
+            if(dup2(fd, STDOUT_FILENO) == -1){
+                perror("dup2");
+            }
+            
+        }
+        if (!strcmp(strvec_get(tokens, redirectPos), ">>")){
+            //printf("append\n");
+            int fd = open(strvec_get(tokens, redirectPos + 1), O_CREAT | O_APPEND | O_RDWR, S_IRUSR | S_IWUSR);
+            if (dup2(fd, STDERR_FILENO) == -1){
+                perror("dup2");
+            }
+            if (dup2(fd, STDOUT_FILENO) == -1){
+                perror("dup2");
             }
         }
+    }
 
-        execvp(arguments[0], arguments);
-        perror("exec");
-        return -1;
-    }
-    else {
-        tcsetpgrp(0, process);
-        waitpid(process, NULL, 0);
-        tcsetpgrp(0, getpid());
-    }
+    execvp(arguments[0], arguments);
+    perror("exec");
+    return -1;
+
+
+
+
 
     // TODO Task 3: Extend this function to perform output redirection before exec()'ing
     // Check for '<' (redirect input), '>' (redirect output), '>>' (redirect and append output)
@@ -146,7 +133,9 @@ int run_command(strvec_t *tokens) {
     // ID as the value for the new process group ID
 
     // Not reachable after a successful exec(), but retain here to keep compiler happy
-    return 0;
+    //return 0;
+
+    
 }
 
 int resume_job(strvec_t *tokens, job_list_t *jobs, int is_foreground) {
@@ -160,6 +149,43 @@ int resume_job(strvec_t *tokens, job_list_t *jobs, int is_foreground) {
     // 5. If the job has terminated (not stopped), remove it from the 'jobs' list
     // 6. Call tcsetpgrp(STDIN_FILENO, <shell_pid>). shell_pid is the *current*
     //    process's pid, since we call this function from the main shell process
+    if(is_foreground == 1){
+        if (job_list_get(jobs, atoi(strvec_get(tokens, 1))) == NULL){
+            fprintf(stderr, "Job index out of bounds\n");
+            return 1;
+        }
+
+        job_t *myjob = job_list_get(jobs, atoi(strvec_get(tokens, 1)));
+        pid_t mypid = myjob-> pid;
+        tcsetpgrp(STDIN_FILENO, mypid);
+        kill((mypid), SIGCONT);
+
+
+        //copied from main()
+        int child_status = 0;
+        waitpid((mypid), &child_status, WUNTRACED);
+        if (WIFEXITED(child_status) || WIFSIGNALED(child_status)){
+            job_list_remove(jobs, atoi(strvec_get(tokens, 1)));
+        }
+        tcsetpgrp(0, getpid());
+    }
+
+
+
+
+
+    else{
+        if (job_list_get(jobs, atoi(strvec_get(tokens, 1))) == NULL){
+            fprintf(stderr, "Job index out of bounds\n");
+            return 1;
+        }
+
+        job_t *myjob = job_list_get(jobs, atoi(strvec_get(tokens, 1)));
+        pid_t mypid = myjob-> pid;
+        kill((mypid), SIGCONT);
+        myjob->status = JOB_BACKGROUND;
+
+    }
 
     // TODO Task 6: Implement the ability to resume stopped jobs in the background.
     // This really just means omitting some of the steps used to resume a job in the foreground:
@@ -167,6 +193,9 @@ int resume_job(strvec_t *tokens, job_list_t *jobs, int is_foreground) {
     // 2. DO NOT call waitpid() to wait on the job
     // 3. Make sure to modify the 'status' field of the relevant job list entry to JOB_BACKGROUND
     //    (as it was JOB_STOPPED before this)
+
+
+
 
     return 0;
 }
@@ -178,6 +207,31 @@ int await_background_job(strvec_t *tokens, job_list_t *jobs) {
     // 2. Make sure the job's status is JOB_BACKGROUND (no sense waiting for a stopped job)
     // 3. Use waitpid() to wait for the job to terminate, as you have in resume_job() and main().
     // 4. If the process terminates (is not stopped by a signal) remove it from the jobs list
+
+    if (job_list_get(jobs, atoi(strvec_get(tokens, 1))) == NULL){
+        fprintf(stderr, "Job index out of bounds\n");
+        return 1;
+    }
+
+    job_t *myjob = job_list_get(jobs, atoi(strvec_get(tokens, 1)));
+    pid_t mypid = myjob-> pid;
+
+    if (myjob->status != JOB_BACKGROUND){
+        fprintf(stderr, "Job index is for stopped process not background process\n");
+        return 1;
+    }
+
+    tcsetpgrp(STDIN_FILENO, mypid);
+    kill((mypid), SIGCONT);
+    
+
+    //copied from main()
+    int child_status = 0;
+    waitpid((mypid), &child_status, WUNTRACED);
+    if (WIFEXITED(child_status) || WIFSIGNALED(child_status)){
+        job_list_remove(jobs, atoi(strvec_get(tokens, 1)));
+    }
+    tcsetpgrp(0, getpid());
 
     return 0;
 }
@@ -191,6 +245,16 @@ int await_all_background_jobs(job_list_t *jobs) {
     //    next step (don't attempt to remove it while iterating through the list).
     // 4. Remove all background jobs (which have all just terminated) from jobs list.
     //    Use the job_list_remove_by_status() function.
+
+    for (unsigned int x = 0; x < jobs->length; x++){
+        if ((job_list_get(jobs, x)->status) == JOB_BACKGROUND){
+            int child_status = 0;
+            waitpid((job_list_get(jobs, x)->pid), &child_status, WUNTRACED);
+            
+        }
+    }
+
+    job_list_remove_by_status(jobs, JOB_BACKGROUND);
 
     return 0;
 }
