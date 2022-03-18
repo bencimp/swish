@@ -147,7 +147,10 @@ int main(int argc, char **argv) {
 
 
 //Beginning of copy code
-
+            /*int foreground = 1;
+            if (strcmp("&", strvec_get(&tokens, (tokens.length))) == 0){
+                foreground = 0;
+            }*/
             pid_t process = fork();
 
             if (!process){
@@ -212,12 +215,14 @@ int main(int argc, char **argv) {
             }
             else {
                 int storageno = 0;
-                tcsetpgrp(STDIN_FILENO, process);
-                waitpid(process, &storageno, WUNTRACED);
-                if(WIFSTOPPED(storageno)){
-                    //stop eating paste and make it work
-                }
-                tcsetpgrp(0, getpid());
+                //if (foreground == 1){
+                    tcsetpgrp(STDIN_FILENO, process);
+                    waitpid(process, &storageno, WUNTRACED);
+                    if(WIFSTOPPED(storageno)){
+                        job_list_add(&jobs, process, strvec_get(&tokens, 0), JOB_STOPPED);
+                    }
+                    tcsetpgrp(0, getpid());
+                //}
             }
 
 
