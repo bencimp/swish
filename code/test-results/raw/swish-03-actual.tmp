@@ -1,0 +1,7 @@
+>> cat test_commands/3.txt | ./run_terminal_session | dos2unix
+@> pwd
+/media/sf_GitHub/swish/code
+@> cd test_data
+@> pwd
+/media/sf_GitHub/swish/code/test_data
+@> exit

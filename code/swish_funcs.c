@@ -70,6 +70,8 @@ int run_command(strvec_t *tokens) {
 
     if (!process){
         
+        setpgid(getpid(), getpid());
+
         if (redirectPos != 0 && strvec_get(tokens, redirectPos) != NULL){
             if (!strcmp(strvec_get(tokens, redirectPos), "<")){
                 //printf("attempting to redirect input\n");
@@ -122,7 +124,9 @@ int run_command(strvec_t *tokens) {
         return -1;
     }
     else {
+        tcsetpgrp(getpid(), process);
         waitpid(process, NULL, 0);
+        tcsetpgrp(getpid(), getpid());
     }
 
     // TODO Task 3: Extend this function to perform output redirection before exec()'ing

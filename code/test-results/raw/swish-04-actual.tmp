@@ -1,0 +1,7 @@
+>> cat test_commands/4.txt | ./run_terminal_session | dos2unix
+@> pwd
+/media/sf_GitHub/swish/code
+@> cd
+@> pwd
+/home/blockhead
+@> exit

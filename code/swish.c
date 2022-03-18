@@ -144,7 +144,9 @@ int main(int argc, char **argv) {
             //   1. Use fork() to spawn a child process
             //   2. Call run_command() in the child process
             //   2. In the parent, use waitpid() to wait for the program to exit
-
+            if (run_command(&tokens) == -1){
+                return 0;
+            }
             // TODO Task 4: Set the child process as the target of signals sent to the terminal
             // via the keyboard.
             // To do this, call 'tcsetpgrp(STDIN_FILENO, <child_pid>)', where child_pid is the
@@ -169,9 +171,7 @@ int main(int argc, char **argv) {
             //    use waitpid() to interact with the newly spawned child process.
             // 3. Add a new entry to the jobs list with the child's pid, program name,
             //    and status JOB_BACKGROUND.
-            if (run_command(&tokens) == -1){
-                return 0;
-            }
+            
         }
 
         strvec_clear(&tokens);
