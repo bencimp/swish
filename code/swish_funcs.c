@@ -318,6 +318,34 @@ int await_background_job(strvec_t *tokens, job_list_t *jobs) {
     // 3. Use waitpid() to wait for the job to terminate, as you have in resume_job() and main().
     // 4. If the process terminates (is not stopped by a signal) remove it from the jobs list
 
+    if (job_list_get(jobs, atoi(strvec_get(tokens, 1))) == NULL){
+        fprintf(stderr, "Job index out of bounds\n");
+        return 1;
+    }
+
+    job_t *myjob = job_list_get(jobs, atoi(strvec_get(tokens, 1)));
+    pid_t mypid = myjob-> pid;
+
+    if (myjob->status != JOB_BACKGROUND){
+        fprintf(stderr, "Job index is for stopped process not background process\n");
+        return 1;
+    }
+
+    tcsetpgrp(STDIN_FILENO, mypid);
+    kill((mypid), SIGCONT);
+    
+
+    //copied from main()
+    int child_status = 0;
+    waitpid((mypid), &child_status, WUNTRACED);
+    /*if(WIFSTOPPED(child_status)){
+        job_list_add(jobs, (mypid), strvec_get(tokens, 0), JOB_STOPPED);
+    }*/
+    if (WIFEXITED(child_status) || WIFSIGNALED(child_status)){
+        job_list_remove(jobs, atoi(strvec_get(tokens, 1)));
+    }
+    tcsetpgrp(0, getpid());
+
     return 0;
 }
 
@@ -330,6 +358,16 @@ int await_all_background_jobs(job_list_t *jobs) {
     //    next step (don't attempt to remove it while iterating through the list).
     // 4. Remove all background jobs (which have all just terminated) from jobs list.
     //    Use the job_list_remove_by_status() function.
+
+    for (unsigned int x = 0; x < jobs->length; x++){
+        if ((job_list_get(jobs, x)->status) == JOB_BACKGROUND){
+            int child_status = 0;
+            waitpid((job_list_get(jobs, x)->pid), &child_status, WUNTRACED);
+            
+        }
+    }
+
+    job_list_remove_by_status(jobs, JOB_BACKGROUND);
 
     return 0;
 }
