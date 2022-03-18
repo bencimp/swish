@@ -147,10 +147,12 @@ int main(int argc, char **argv) {
 
 
 //Beginning of copy code
-            /*int foreground = 1;
-            if (strcmp("&", strvec_get(&tokens, (tokens.length))) == 0){
+            int foreground = 1;
+            if (strcmp("&", strvec_get(&tokens, (tokens.length - 1))) == 0){
                 foreground = 0;
-            }*/
+                strvec_take(&tokens, (tokens.length - 1));
+                //printf("Last token is an ampersand!\n");
+            }
             pid_t process = fork();
 
             if (!process){
@@ -215,14 +217,17 @@ int main(int argc, char **argv) {
             }
             else {
                 int storageno = 0;
-                //if (foreground == 1){
+                if (foreground == 1){
                     tcsetpgrp(STDIN_FILENO, process);
                     waitpid(process, &storageno, WUNTRACED);
                     if(WIFSTOPPED(storageno)){
                         job_list_add(&jobs, process, strvec_get(&tokens, 0), JOB_STOPPED);
                     }
                     tcsetpgrp(0, getpid());
-                //}
+                }
+                else {
+                    job_list_add(&jobs, process, strvec_get(&tokens, 0), JOB_BACKGROUND);
+                }
             }
 
 
