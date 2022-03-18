@@ -12,6 +12,8 @@
 #define CMD_LEN 512
 #define PROMPT "@> "
 
+//UPDATE SINCE FIRST SUBMISSION: second dev cycle was a rough one. Had to move the contents of run_command into main (where they should've been in the first place, mind you.) Still, very pleased with the results!
+
 int main(int argc, char **argv) {
     // Task 4: Set up shell to ignore SIGTTIN, SIGTTOU when put in background
     // You should adapt this code for use in run_command().
@@ -146,7 +148,6 @@ int main(int argc, char **argv) {
             //   2. In the parent, use waitpid() to wait for the program to exit
 
 
-//Beginning of copy code
             int foreground = 1;
             if (strcmp("&", strvec_get(&tokens, (tokens.length - 1))) == 0){
                 foreground = 0;
@@ -229,19 +230,6 @@ int main(int argc, char **argv) {
                     job_list_add(&jobs, process, strvec_get(&tokens, 0), JOB_BACKGROUND);
                 }
             }
-
-
-//End of copy code here
-
-
-            //first do
-
-
-
-            /*if (run_command(&tokens) == -1){
-                return 0;
-            }*/
-
 
 
             // TODO Task 4: Set the child process as the target of signals sent to the terminal
